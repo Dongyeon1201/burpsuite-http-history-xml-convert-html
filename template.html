@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<link href="style.css" rel="stylesheet" type="text/css">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="100%">BURP SUITE HTTP ITEM</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center">host</td>
+                <td style="text-align: center">port</td>
+                <td style="text-align: center">ip</td>
+                <td style="text-align: center">path</td>
+                <td style="text-align: center">method</td>
+                <td style="text-align: center">status</td>
+                <td style="text-align: center">time</td>
+                <td style="text-align: center">responselength</td>
+                <td style="text-align: center">mimetype</td>
+                <td style="text-align: center">extension</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+<script>
+    function show_detail(object) {
+        var index = object.id
+        var request = document.getElementById(index + "-request")
+        var response = document.getElementById(index + "-response")
+
+        request.classList.remove('hide')
+        response.classList.remove('hide')
+        request.classList.add('show')
+        response.classList.add('show')
+
+        object.onclick = function(){hide_detail(object);}
+    }
+    function hide_detail(object){
+        var index = object.id
+        var request = document.getElementById(index + "-request")
+        var response = document.getElementById(index + "-response")
+
+        request.classList.remove('show')
+        response.classList.remove('show')
+        request.classList.add('hide')
+        response.classList.add('hide')
+
+        object.onclick = function(){show_detail(object);}
+    }
+</script>
+</html>
