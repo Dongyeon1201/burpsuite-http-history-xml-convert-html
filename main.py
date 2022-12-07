@@ -1,8 +1,10 @@
 import xml.etree.ElementTree as elemTree
-import base64
 from bs4 import BeautifulSoup
+import base64
+import json
+import re
 
-XML_PATH = '/Users/dongyeon/Desktop/test.xml'
+XML_PATH = './test.xml'
 TEMPLATE_HTML_PATH = 'template.html'
 
 tree = elemTree.parse(XML_PATH)
@@ -72,6 +74,26 @@ def parse_xml(xml_tree):
     return info_rows
 
 
+def regex_json_pretty(match):
+    """
+    POST BODY Json 형식 문자열을 보기 편하도록 변경
+    """
+    if match.group(1):
+        return json.dumps(json.loads(match.group(1)), indent=4)
+
+
+def precess_html_str(html_str):
+    """
+    request, response 결과를 저장하는 문자열을 가공
+    """
+
+    # 개행 처리
+    temp = "\n".join(html_str.splitlines())
+
+    # POST BODY Json 형식 문자열을 보기 편하도록 변경
+    return re.sub(r'(\{.+\})', regex_json_pretty, temp)
+
+
 def set_result_html(xml_data):
     """
     xml 파일에서 추출한 데이터를 사용하여 결과 HTML를 만듦
@@ -112,7 +134,9 @@ def set_result_html(xml_data):
 
         # request 정보가 작성되는 div tag
         temp_div = soup.new_tag("div")
-        temp_div.string = item.get('request')
+        temp_div.attrs['class'] = 'detail'
+        # temp_div.string = "\n".join(item.get('request').splitlines())
+        temp_div.string = precess_html_str(item.get('request'))
 
         # td tag에 div tag 추가
         temp_td.append(temp_div)
@@ -132,7 +156,8 @@ def set_result_html(xml_data):
 
         # request 정보가 작성되는 div tag
         temp_div = soup.new_tag("div")
-        temp_div.string = item.get('response')
+        temp_div.attrs['class'] = 'detail'
+        temp_div.string = precess_html_str(item.get('response'))
 
         # td tag에 div tag 추가
         temp_td.append(temp_div)

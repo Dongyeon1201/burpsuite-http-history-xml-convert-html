@@ -16,3 +16,7 @@ tfoot {
 .hide {
   display: none;
 }
+
+.detail {
+    white-space: pre-wrap;
+}
