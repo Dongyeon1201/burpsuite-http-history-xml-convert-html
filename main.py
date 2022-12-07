@@ -3,12 +3,25 @@ from bs4 import BeautifulSoup
 import base64
 import json
 import re
+import argparse
 
-XML_PATH = './test.xml'
-TEMPLATE_HTML_PATH = 'template.html'
 
-tree = elemTree.parse(XML_PATH)
-root = tree.getroot()
+def get_arguments():
+    """
+    argument 사용
+    """
+    return_arg_data = {}
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--file', required=True, help='변환을 원하는 xml 파일 경로', dest='xml_file_path')
+    parser.add_argument('-t', '--template', required=False, default='./template.html', help='변환을 원하는 xml 파일 경로', dest='template_html_file')
+    parser.add_argument('-s', '--save', required=False, default='./result.html', help='변환된 html 저장 경로', dest='save_result_file_path')
+
+    return_arg_data['xml_file_path'] = parser.parse_args().xml_file_path
+    return_arg_data['template_html_file'] = parser.parse_args().template_html_file
+    return_arg_data['save_result_file_path'] = parser.parse_args().save_result_file_path
+
+    return return_arg_data
 
 
 def base64_decode(data):
@@ -25,9 +38,7 @@ def get_template_html():
     """
 
     with open(TEMPLATE_HTML_PATH, 'r') as f:
-        content = ''.join(f.readlines())
-
-    return content
+        return ''.join(f.readlines())
 
 
 def parse_xml(xml_tree):
@@ -173,6 +184,13 @@ def set_result_html(xml_data):
     return soup
 
 
+XML_PATH = get_arguments()['xml_file_path']
+TEMPLATE_HTML_PATH = get_arguments()['template_html_file']
+RESULT_SAVE_PATH = get_arguments()['save_result_file_path']
+
+tree = elemTree.parse(XML_PATH)
+root = tree.getroot()
+
 # xml에서 Item에 대한 정보를 얻는다.
 xml_data = parse_xml(tree)
 
@@ -180,5 +198,5 @@ xml_data = parse_xml(tree)
 result = set_result_html(xml_data)
 
 # 결과를 html 파일로 저장한다.
-with open("result.html", "w") as file:
+with open(RESULT_SAVE_PATH, "w") as file:
     file.write(str(result))
