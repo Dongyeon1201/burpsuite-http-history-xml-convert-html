@@ -90,10 +90,10 @@ def regex_json_pretty(match):
     POST BODY Json 형식 문자열을 보기 편하도록 변경
     """
     if match.group(1):
-        return json.dumps(json.loads(match.group(1)), indent=4)
+        return '\n\n' + json.dumps(json.loads(match.group(1)), indent=4)
 
 
-def precess_html_str(html_str):
+def precess_html_str(html_str, mimetype):
     """
     request, response 결과를 저장하는 문자열을 가공
     """
@@ -102,7 +102,10 @@ def precess_html_str(html_str):
     temp = "\n".join(html_str.splitlines())
 
     # POST BODY Json 형식 문자열을 보기 편하도록 변경
-    return re.sub(r'(\{.+\})', regex_json_pretty, temp)
+    if mimetype == 'JSON':
+        return re.sub(r'\n\n({.+})', regex_json_pretty, temp)
+    else:
+        return temp
 
 
 def set_result_html(xml_data):
@@ -146,8 +149,7 @@ def set_result_html(xml_data):
         # request 정보가 작성되는 div tag
         temp_div = soup.new_tag("div")
         temp_div.attrs['class'] = 'detail'
-        # temp_div.string = "\n".join(item.get('request').splitlines())
-        temp_div.string = precess_html_str(item.get('request'))
+        temp_div.string = precess_html_str(item.get('request'), item.get('mimetype'))
 
         # td tag에 div tag 추가
         temp_td.append(temp_div)
@@ -168,7 +170,7 @@ def set_result_html(xml_data):
         # request 정보가 작성되는 div tag
         temp_div = soup.new_tag("div")
         temp_div.attrs['class'] = 'detail'
-        temp_div.string = precess_html_str(item.get('response'))
+        temp_div.string = precess_html_str(item.get('response'), item.get('mimetype'))
 
         # td tag에 div tag 추가
         temp_td.append(temp_div)
