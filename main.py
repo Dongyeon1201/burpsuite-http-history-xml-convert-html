@@ -4,6 +4,7 @@ import base64
 import json
 import re
 import argparse
+from datetime import datetime
 
 
 def get_arguments():
@@ -99,7 +100,7 @@ def regex_json_pretty(match):
             pass
 
 
-def precess_html_str(html_str, mimetype):
+def precess_html_str(html_str):
     """
     request, response 결과를 저장하는 문자열을 가공
     """
@@ -109,6 +110,13 @@ def precess_html_str(html_str, mimetype):
 
     # POST BODY Json 형식 문자열을 보기 편하도록 변경
     return re.sub(r'\n\n({.+})', regex_json_pretty, temp)
+
+
+def info_sort_by_time(xml_data, fmt='%a %b %d %H:%M:%S %Z %Y'):
+    """
+    time순으로 정렬
+    """
+    xml_data.sort(key=lambda x: datetime.strptime(x.get('time'), fmt))
 
 
 def set_result_html(xml_data):
@@ -152,7 +160,7 @@ def set_result_html(xml_data):
         # request 정보가 작성되는 div tag
         temp_div = soup.new_tag("div")
         temp_div.attrs['class'] = 'detail'
-        temp_div.string = precess_html_str(item.get('request'), item.get('mimetype'))
+        temp_div.string = precess_html_str(item.get('request'))
 
         # td tag에 div tag 추가
         temp_td.append(temp_div)
@@ -173,7 +181,7 @@ def set_result_html(xml_data):
         # request 정보가 작성되는 div tag
         temp_div = soup.new_tag("div")
         temp_div.attrs['class'] = 'detail'
-        temp_div.string = precess_html_str(item.get('response'), item.get('mimetype'))
+        temp_div.string = precess_html_str(item.get('response'))
 
         # td tag에 div tag 추가
         temp_td.append(temp_div)
@@ -198,6 +206,7 @@ root = tree.getroot()
 
 # xml에서 Item에 대한 정보를 얻는다.
 xml_data = parse_xml(tree)
+info_sort_by_time(xml_data)
 
 # 결과가 작성된 html 코드 내용을 가져온다.
 result = set_result_html(xml_data)
