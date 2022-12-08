@@ -93,7 +93,7 @@ def regex_json_pretty(match):
 
     if match.group(1):
         try:
-            return '\n\n' + json.dumps(json.loads(match.group(1)), indent=4)
+            return '\n\n' + json.dumps(json.loads(match.group(1)), indent=4, ensure_ascii=False)
 
         # Json 형식 데이터가 아닐 때는 pretty 작업 X
         except ValueError:
