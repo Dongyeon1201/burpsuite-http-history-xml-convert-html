@@ -89,8 +89,14 @@ def regex_json_pretty(match):
     """
     POST BODY Json 형식 문자열을 보기 편하도록 변경
     """
+
     if match.group(1):
-        return '\n\n' + json.dumps(json.loads(match.group(1)), indent=4)
+        try:
+            return '\n\n' + json.dumps(json.loads(match.group(1)), indent=4)
+
+        # Json 형식 데이터가 아닐 때는 pretty 작업 X
+        except ValueError:
+            pass
 
 
 def precess_html_str(html_str, mimetype):
@@ -102,10 +108,7 @@ def precess_html_str(html_str, mimetype):
     temp = "\n".join(html_str.splitlines())
 
     # POST BODY Json 형식 문자열을 보기 편하도록 변경
-    if mimetype == 'JSON':
-        return re.sub(r'\n\n({.+})', regex_json_pretty, temp)
-    else:
-        return temp
+    return re.sub(r'\n\n({.+})', regex_json_pretty, temp)
 
 
 def set_result_html(xml_data):
